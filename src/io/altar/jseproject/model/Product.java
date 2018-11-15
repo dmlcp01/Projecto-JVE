@@ -1,17 +1,19 @@
 package io.altar.jseproject.model;
 
 public class Product {
-	private int id;
+	private int id=0;
 	private Shelf shelves[];
 	private int price;
 	private int iva;
 	private int pvp;
-	public Product (Shelf[] shelves, int productId, int price, int iva, int pvp){
+	public Product (Shelf[] shelves, int price, int iva, int pvp){
 		this.shelves=shelves;
-		this.id=productId;
 		this.price=price;
 		this.iva=iva;
 		this.pvp=pvp;
+	}
+	public Product() {
+		// TODO Auto-generated constructor stub
 	}
 	public int getId() {
 		return id;
@@ -43,4 +45,6 @@ public class Product {
 	public void setPvp(int pvp) {
 		this.pvp = pvp;
 	}
+	
+
 }

@@ -1,24 +1,15 @@
 package io.altar.jseproject.model;
 
 public class Shelf {
-	private int id;
+	private int id = 0;
 	private int capacity;
 	private Product product;
 	private int rentPrice;
 	
-	public Shelf(int id, int capacity, Product product, int rentPrice) {
-		this.id = id;
+	public Shelf(int capacity, Product product, int rentPrice) {
 		this.capacity = capacity;
 		this.product = product;
 		this.rentPrice = rentPrice;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public int getCapacity() {
