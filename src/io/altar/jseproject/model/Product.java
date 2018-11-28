@@ -1,50 +1,84 @@
 package io.altar.jseproject.model;
 
-public class Product {
-	private int id=0;
-	private Shelf shelves[];
-	private int price;
-	private int iva;
-	private int pvp;
-	public Product (Shelf[] shelves, int price, int iva, int pvp){
-		this.shelves=shelves;
-		this.price=price;
-		this.iva=iva;
-		this.pvp=pvp;
-	}
-	public Product() {
-		// TODO Auto-generated constructor stub
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public Shelf[] getShelves() {
-		return shelves;
-	}
-	public void setShelves(Shelf[] shelves) {
-		this.shelves = shelves;
-	}
-	public int getPrice() {
-		return price;
-	}
-	public void setPrice(int price) {
+import java.util.ArrayList;
+
+public class Product extends Entity{
+	private  ArrayList<Shelf> list = new ArrayList<Shelf>();
+	private float price;
+	private float discountValue;
+	private float iva;
+	private float pvp;
+	
+
+	public Product(float price, float discountValue, float iva, float pvp) {
+		super();
+
 		this.price = price;
-	}
-	public int getIva() {
-		return iva;
-	}
-	public void setIva(int iva) {
+		this.discountValue = discountValue;
 		this.iva = iva;
-	}
-	public int getPvp() {
-		return pvp;
-	}
-	public void setPvp(int pvp) {
 		this.pvp = pvp;
 	}
 	
+	public void addShelf(Shelf shelf) {
+		list.add(shelf);
+	}
+	
+	public void removeShelf(Shelf shelf) {
+		list.remove(shelf);
+	}
+
+//	public ArrayList<Shelf> getShelves() {
+//		return list;
+//	}
+//
+//	public void setShelves(ArrayList<Shelf> list) {
+//		this.list = list;
+//	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
+	}
+
+	public float getDiscountValue() {
+		return discountValue;
+	}
+
+	public void setDiscountValue(float discountValue) {
+		this.discountValue = discountValue;
+	}
+
+	public float getIva() {
+		return iva;
+	}
+
+	public void setIva(float iva) {
+		this.iva = iva;
+	}
+
+	public float getPvp() {
+		return pvp;
+	}
+
+	public void setPvp(float pvp) {
+		this.pvp = pvp;
+	}
+
+	private String productsToString(){
+		String str = "";
+		for (int i=0;i<list.size();i++){
+			str+=list.get(i).getId();
+			str+=", ";
+		}
+		return str;
+	}
+	@Override
+	public String toString() {
+		return "Product [shelves="+ productsToString()+ "price=" + price + ", discountValue=" + discountValue
+				+ ", iva=" + iva + ", pvp=" + pvp + "]";
+	}
 
 }
