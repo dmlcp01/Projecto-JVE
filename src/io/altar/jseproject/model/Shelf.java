@@ -5,6 +5,7 @@ public class Shelf extends Entity{
 	private float capacity;
 	private Product product=null;
 	private float rentPrice;
+	public Object removeProduct;
 	public Shelf(float capacity,float rentPrice) {
 		super();
 		this.capacity = capacity;
@@ -22,6 +23,10 @@ public class Shelf extends Entity{
 	}
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+	
+	public void removeProduct (){
+		this.product = null;
 	}
 	public float getRentPrice() {
 		return rentPrice;

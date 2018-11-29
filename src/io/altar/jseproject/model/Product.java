@@ -19,6 +19,9 @@ public class Product extends Entity{
 		this.pvp = pvp;
 	}
 	
+	public ArrayList<Shelf> getList (){
+		return list;
+		}
 	public void addShelf(Shelf shelf) {
 		list.add(shelf);
 	}
@@ -26,14 +29,6 @@ public class Product extends Entity{
 	public void removeShelf(Shelf shelf) {
 		list.remove(shelf);
 	}
-
-//	public ArrayList<Shelf> getShelves() {
-//		return list;
-//	}
-//
-//	public void setShelves(ArrayList<Shelf> list) {
-//		this.list = list;
-//	}
 
 	public float getPrice() {
 		return price;
@@ -77,8 +72,13 @@ public class Product extends Entity{
 	}
 	@Override
 	public String toString() {
-		return "Product [shelves="+ productsToString()+ "price=" + price + ", discountValue=" + discountValue
+		return "Product " + getId() + "[shelves="+ productsToString()+ "price=" + price + ", discountValue=" + discountValue
 				+ ", iva=" + iva + ", pvp=" + pvp + "]";
+	}
+
+	public void removeListShelf() {
+		list = new ArrayList<Shelf>();
+		
 	}
 
 }

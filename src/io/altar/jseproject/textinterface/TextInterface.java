@@ -141,7 +141,9 @@ public class TextInterface {
 		float pvp = 0;
 		float discount = 0;
 		Shelf prateleira;
-		Product produto = new Product( 0, 0, 0, 0);
+		Product produto = new Product(0, 0, 0, 0); // inicializo o produto e
+													// depois faco sets no fim
+													// para alterar
 		float rentPrice = 0;
 		Long prateleiraId;
 		System.out.println("Criar novo produto:");
@@ -186,50 +188,52 @@ public class TextInterface {
 			}
 		}
 		while (true) {
-			System.out.println("Indique o ID da prateleira na qual quer adicionar o produto");
-			if(!sc.hasNextLong() ){
-				continue;
-			}
-			prateleiraId = sc.nextLong();
-			if (!existingShelfID(prateleiraId)) {
-				prateleira = new Shelf(100, rentPrice);
-				theRentingPriceIs();
-				produto.addShelf(prateleira);
-				prateleira.setProduct(produto);
-				shelfRepository.save(prateleira);
+			System.out.println("Quer adicionar um produto existente a esta prateleira? (responda S ou N)");
+			char temp = sc.next().charAt(0);
+			if (temp == 's' || temp == 'S') {
+				System.out.println("Indique o ID da prateleira na qual quer adicionar o produto");
+				if (!sc.hasNextLong()) {
+					continue;
+				}
+				prateleiraId = sc.nextLong();
+				if (!existingShelfID(prateleiraId)) {
+					prateleira = new Shelf(100, rentPrice);
+					theRentingPriceIs();
+					produto.addShelf(prateleira); // adiciona a prateleira ao
+													// produto
+					prateleira.setProduct(produto); // adiciona o produto a
+													// prateleira
+					shelfRepository.save(prateleira); // grava a prateleira
+					sc.nextLine();
+					break;
+				} else {
+					prateleira = shelfRepository.findById(prateleiraId);
+					if (prateleira.getProduct() != null) {
+						System.out.println("Sem espaco disponível");
+					} else {
+						prateleira.setProduct(produto);
+						produto.addShelf(prateleira);
+					}
+					sc.nextLine();
+				}
+			} else {
 				sc.nextLine();
 				break;
-			} else {
-				prateleira = shelfRepository.findById(prateleiraId);
-				if(prateleira.getProduct()!=null){
-					System.out.println("Sem espaco disponível");			
-				}
-				else{
-					prateleira.setProduct(produto);
-					produto.addShelf(prateleira);
-				}
-				
-				sc.nextLine();
 			}
-			sc.nextLine();
 		}
-			
-			produto.setIva(iva);
-			produto.setDiscountValue(discount);
-			produto.setPrice(preco);
-			produto.setPvp(pvp);
-
-			productRepository.save(produto);
-			System.out.println("O novo produto é:" + produto.toString());
-			sc.nextLine();
-		
+		produto.setIva(iva);
+		produto.setDiscountValue(discount);
+		produto.setPrice(preco);
+		produto.setPvp(pvp);
+		productRepository.save(produto);
+		System.out.println("O novo produto é:" + produto.toString());
 	}
 
 	// funcao para criar uma nova prateleira
 	public void newShelf() {
 		float capacidade = 0;
 		float rentPrice = 0;
-		Product product = null;
+		Product produto;
 		System.out.println("Criar nova prateleira:");
 		Shelf prateleira = new Shelf(0, 0);
 		while (true) { // garante que volta a ser chamado ate ser introduzido um
@@ -255,24 +259,28 @@ public class TextInterface {
 		}
 		while (true) {
 			System.out.println("Quer adicionar um produto existente a esta prateleira? (responda S ou N)");
+			sc.nextLine();
 			char temp = sc.next().charAt(0);
 			if (temp == 's' || temp == 'S') {
-				sc.nextLine();
-				// System.out.println("Os produtos existentes sao:" +); // como
-				// mostrar todos os Id existentes????
+				
 				System.out.println("Indique o ID do produto que pretende adicionar");
-				long id = sc.nextLong();
-				if (sc.hasNextFloat()){
+
+				if (!sc.hasNextFloat()) {
+					sc.nextLine();
 					continue;
 				}
+				long id = sc.nextLong();
 				if (existingProductID(id)) {
-					product = productRepository.findById(id);
-					prateleira.setProduct(product);
-					product.addShelf(prateleira);
+					sc.nextLine();
+					produto = productRepository.findById(id);
+					prateleira.setProduct(produto);
+					produto.addShelf(prateleira);
+					break;
+				} else {
+					System.out.println("O produto nao existe.");
 				}
-				break;
+
 			} else {
-				sc.nextLine();
 				break;
 			}
 		}
@@ -280,7 +288,6 @@ public class TextInterface {
 		prateleira.setRentPrice(rentPrice);
 		shelfRepository.save(prateleira);
 		System.out.println(prateleira);
-		sc.nextLine();
 	}
 
 	public void theRentingPriceIs() {
@@ -374,10 +381,15 @@ public class TextInterface {
 		}
 		if (existingProductID(id)) {
 			String line = "";
-			float preco = productRepository.findById(id).getPrice();
-			float iva = productRepository.findById(id).getIva();
-			float pvp = productRepository.findById(id).getPvp();
-			float discount = productRepository.findById(id).getDiscountValue();
+			Product produtoActual = productRepository.findById(id);
+			float preco = produtoActual.getPrice();
+			float iva = produtoActual.getIva();
+			float pvp = produtoActual.getPvp();
+			float discount = produtoActual.getDiscountValue();
+			ArrayList<Shelf> listaPrateleirasActuais = produtoActual.getList();
+			long prateleiraId;
+			Shelf prateleiraNova;
+			int rentPrice = 0;
 			sc.nextLine();
 			while (true) {
 				System.out.println("O preco actual é:" + preco);
@@ -434,7 +446,6 @@ public class TextInterface {
 			while (true) {
 				System.out.println("O pvp actual é:" + pvp);
 				line = sc.nextLine();
-
 				if (line.length() == 0) {
 					System.out.println("Enter");
 					break;
@@ -448,7 +459,53 @@ public class TextInterface {
 					}
 				}
 			}
-
+			while (true) {
+				System.out.println("A prateleira actual é:" + listaPrateleirasActuais);
+				line = sc.nextLine();
+				if (line.length() == 0) {
+					produtoActual.removeListShelf();
+					break;
+				}
+				System.out.println("Quer adicionar uma nova prateleira a este produto? (responda S ou N)");
+				char temp = sc.next().charAt(0);
+				if (temp == 's' || temp == 'S') {
+					System.out.println("Indique o ID da prateleira na qual quer adicionar o produto");
+					if (!sc.hasNextLong()) {
+						continue;
+					}
+					prateleiraId = sc.nextLong();
+					if (!existingShelfID(prateleiraId)) {
+						prateleiraNova = new Shelf(100, rentPrice);
+						theRentingPriceIs();
+						produtoActual.addShelf(prateleiraNova); // adiciona a
+																// prateleira ao
+																// produto
+						prateleiraNova.setProduct(produtoActual); // adiciona o
+																	// produto a
+																	// prateleira
+						shelfRepository.save(prateleiraNova); // grava a
+																// prateleira
+						sc.nextLine();
+						break;
+					} else {
+						prateleiraNova = shelfRepository.findById(prateleiraId);
+						if (prateleiraNova.getProduct() != null) { // verifica
+																	// se a
+																	// prateleira
+																	// está
+																	// cheia
+							System.out.println("Sem espaco disponível");
+						} else {
+							prateleiraNova.setProduct(produtoActual);
+							produtoActual.addShelf(prateleiraNova);
+						}
+						sc.nextLine();
+					}
+				} else {
+					sc.nextLine();
+					break;
+				}
+			}
 			Product produto = new Product(preco, discount, iva, pvp);
 			produto.setId((long) id);
 			productRepository.update(produto);
@@ -504,8 +561,11 @@ public class TextInterface {
 		}
 		if (existingShelfID(id)) {
 			String line = "";
-			float capacidade = shelfRepository.findById(id).getCapacity();
-			float rentPrice = shelfRepository.findById(id).getRentPrice();
+			Shelf prateleiraOriginal = shelfRepository.findById(id);
+			float capacidade = prateleiraOriginal.getCapacity();
+			float rentPrice = prateleiraOriginal.getRentPrice();
+			Product product = prateleiraOriginal.getProduct();
+
 			sc.nextLine();
 			while (true) {
 				System.out.println("A capacidade actual é:" + capacidade);
@@ -525,7 +585,7 @@ public class TextInterface {
 			}
 
 			while (true) {
-				System.out.println("O o preco de aluguer actual é:" + rentPrice);
+				System.out.println("O preco de aluguer actual é:" + rentPrice);
 				line = sc.nextLine();
 
 				if (line.length() == 0) {
@@ -541,15 +601,43 @@ public class TextInterface {
 					}
 				}
 			}
-
-			Shelf prateleira = new Shelf(capacidade, rentPrice);
-			prateleira.setId((long) id);
-			shelfRepository.update(prateleira);
-			System.out.println(prateleira.toString());
-			sc.nextLine();
-		} else {
-			System.out.println("O ID introduzido nao é válido.");
-			editShelf();
+			while (true) {
+				System.out.println("O producto actual :" + product.getId());
+				line = sc.nextLine();
+				if (line.length() == 0) {
+					if (product != null) {
+						product.removeShelf(prateleiraOriginal);
+					}
+					prateleiraOriginal.removeProduct();
+					System.out.println("Quer adicionar um produto existente a esta prateleira? (responda S ou N)");
+					char temp = sc.next().charAt(0);
+					if (temp == 's' || temp == 'S') {
+						System.out.print("Qual o id do novo produto que quer adicionar a esta prateleira?");
+						if (!sc.hasNextFloat()) {
+							sc.nextLine();
+							continue;
+						}
+						long idProduto = sc.nextLong();
+						if (existingProductID(idProduto)) {
+							sc.nextLine();
+							product = productRepository.findById(idProduto);
+							prateleiraOriginal.setProduct(product);
+							product.addShelf(prateleiraOriginal);
+							break;
+						} else {
+							System.out.println("O produto nao existe.");
+						}
+					}else{
+						break;
+					}
+				
+				Shelf prateleira = new Shelf(capacidade, rentPrice);
+				prateleira.setId((long) id);
+				prateleira.setProduct(prateleiraOriginal.getProduct());
+				shelfRepository.update(prateleira);
+				System.out.println(prateleira.toString());
+				}
+			}
 		}
 	}
 }
